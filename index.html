@@ -81,9 +81,12 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a1628; color: #
   .nav-btn { padding: 12px 14px; font-size: 11px; letter-spacing: 0; }
   .content { padding: 14px 10px; }
   .gender-btn { padding: 8px 6px; font-size: 12px; }
-  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
-  .standings-table { min-width: 520px; }
-  .standings-table th, .standings-table td { padding: 8px 6px; font-size: 12px; white-space: nowrap; }
+  .table-wrap { display: block; overflow-x: scroll; -webkit-overflow-scrolling: touch; width: 100%; max-width: 100%; }
+  .standings-table { min-width: 560px; table-layout: fixed; }
+  .standings-table th:nth-child(1), .standings-table td:nth-child(1) { width: 36px; }
+  .standings-table th:nth-child(2), .standings-table td:nth-child(2) { width: 130px; }
+  .standings-table th:nth-child(n+3), .standings-table td:nth-child(n+3) { width: 44px; }
+  .standings-table th, .standings-table td { padding: 8px 4px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .pts-badge { padding: 2px 7px; font-size: 12px; }
   .rank-badge { width: 24px; height: 24px; font-size: 11px; }
   .fecha-header { padding: 10px 12px; gap: 4px; }
