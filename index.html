@@ -209,8 +209,12 @@ async function loadFixture() {
         const resV1  = (r[5]||'').trim();
         const vis1   = (r[6]||'').trim();
         const gen1   = (r[7]||'').trim();
+        // Fila de parciales: fila siguiente, col3 y col5
+        const next = rows[i+1] || [];
+        const parcL1 = (next[3]||'').trim();
+        const parcV1 = (next[5]||'').trim();
         if (local1 && vis1) {
-          const p = {hora: hora1, local: local1, resL: resL1, resV: resV1, visita: vis1, nota: notaNext};
+          const p = {hora: hora1, local: local1, resL: resL1, resV: resV1, visita: vis1, nota: notaNext, parcL: parcL1, parcV: parcV1};
           notaNext = '';
           if (gen1 === 'F') fechasF[currentKey].partidos.push(p);
           else if (gen1 === 'M') fechasM[currentKey].partidos.push(p);
@@ -223,8 +227,10 @@ async function loadFixture() {
           const resV2  = (r[13]||'').trim();
           const vis2   = (r[14]||'').trim();
           const gen2   = (r[15]||'').trim();
+          const parcL2 = (next[11]||'').trim();
+          const parcV2 = (next[13]||'').trim();
           if (local2 && vis2) {
-            const p2 = {hora: hora2, local: local2, resL: resL2, resV: resV2, visita: vis2, nota: ''};
+            const p2 = {hora: hora2, local: local2, resL: resL2, resV: resV2, visita: vis2, nota: '', parcL: parcL2, parcV: parcV2};
             if (gen2 === 'F') fechasF[currentKey].partidos.push(p2);
             else if (gen2 === 'M') fechasM[currentKey].partidos.push(p2);
           }
@@ -255,17 +261,17 @@ function renderFechas(fechas) {
     const {num, date} = parseTitulo(f.titulo);
     const partidos = f.partidos.map(p => {
       const jugado = p.resL !== '' && p.resV !== '' && p.resL !== '-' && !isNaN(parseInt(p.resL));
-      let sL, sV, pts = '';
+      let sL, sV;
       if (jugado) {
         const wL = parseInt(p.resL) > parseInt(p.resV);
         sL = `<span class="score${wL?' winner':''}">${p.resL}</span>`;
         sV = `<span class="score${!wL?' winner':''}">${p.resV}</span>`;
-        pts = `<span class="score-pts">${p.resL}–${p.resV}</span>`;
       } else {
         sL = '<span class="score pendiente">–</span>';
         sV = '<span class="score pendiente">–</span>';
       }
       const nota = p.nota ? `<span class="nota-especial">⚠ ${p.nota}</span>` : '';
+      const parc = (jugado && p.parcL && p.parcV) ? `<span class="score-pts">${p.parcL}–${p.parcV}</span>` : '';
       return `<div class="partido">
         <span class="partido-hora">${p.hora}</span>
         <div class="partido-equipos">
@@ -273,7 +279,7 @@ function renderFechas(fechas) {
           <div class="vs-box">${sL}<span class="vs-sep">vs</span>${sV}</div>
           <span class="equipo-nombre away">${p.visita}</span>
         </div>
-        ${pts}${nota}
+        ${parc}${nota}
       </div>`;
     }).join('');
     return `<div class="fecha-card">
