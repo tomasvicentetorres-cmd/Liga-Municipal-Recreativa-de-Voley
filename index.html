@@ -203,18 +203,20 @@ async function loadFixture() {
 
       // Partido izquierdo: col1=hora, col2=local, col3=resL, col4=vs, col5=resV, col6=visita, col7=genero
       const hora1 = c1;
+      const numPartido = c0.match(/^\d+$/) ? parseInt(c0) : null;
       if (hora1.match(/\d+:\d+/) && currentKey) {
         const local1 = (r[2]||'').trim();
         const resL1  = (r[3]||'').trim();
         const resV1  = (r[5]||'').trim();
         const vis1   = (r[6]||'').trim();
         const gen1   = (r[7]||'').trim();
-        // Fila de parciales: fila siguiente, col3 y col5
+        // Fila de parciales: fila siguiente, col3 y col5. Comentario en col0 o col1
         const next = rows[i+1] || [];
         const parcL1 = (next[3]||'').trim();
         const parcV1 = (next[5]||'').trim();
+        const comentario1 = (next[0]||next[1]||'').trim();
         if (local1 && vis1) {
-          const p = {hora: hora1, local: local1, resL: resL1, resV: resV1, visita: vis1, nota: notaNext, parcL: parcL1, parcV: parcV1};
+          const p = {hora: hora1, local: local1, resL: resL1, resV: resV1, visita: vis1, nota: notaNext || comentario1, parcL: parcL1, parcV: parcV1, numPartido};
           notaNext = '';
           if (gen1 === 'F') fechasF[currentKey].partidos.push(p);
           else if (gen1 === 'M') fechasM[currentKey].partidos.push(p);
@@ -229,8 +231,9 @@ async function loadFixture() {
           const gen2   = (r[15]||'').trim();
           const parcL2 = (next[11]||'').trim();
           const parcV2 = (next[13]||'').trim();
+          const comentario2 = (next[9]||'').trim();
           if (local2 && vis2) {
-            const p2 = {hora: hora2, local: local2, resL: resL2, resV: resV2, visita: vis2, nota: '', parcL: parcL2, parcV: parcV2};
+            const p2 = {hora: hora2, local: local2, resL: resL2, resV: resV2, visita: vis2, nota: comentario2, parcL: parcL2, parcV: parcV2, numPartido};
             if (gen2 === 'F') fechasF[currentKey].partidos.push(p2);
             else if (gen2 === 'M') fechasM[currentKey].partidos.push(p2);
           }
@@ -272,14 +275,23 @@ function renderFechas(fechas) {
       }
       const nota = p.nota ? `<span class="nota-especial">⚠ ${p.nota}</span>` : '';
       const parc = (jugado && p.parcL && p.parcV) ? `<span class="score-pts">${p.parcL}–${p.parcV}</span>` : '';
+      // Etiqueta playoff según número de partido
+      let playoffBadge = '';
+      if (p.numPartido) {
+        const labels = {1:'⚡ Cuartos', 2:'⚡ Cuartos', 3:'⚡ Cuartos', 4:'⚡ Cuartos', 5:'🏆 Semifinal', 6:'🏆 Semifinal', 7:'🥉 3er Puesto', 8:'🥇 Final'};
+        const colors = {1:'#cd8b3a',2:'#cd8b3a',3:'#cd8b3a',4:'#cd8b3a',5:'#f0c040',6:'#f0c040',7:'#cd8b3a',8:'#f0c040'};
+        playoffBadge = `<span style="font-size:11px;color:${colors[p.numPartido]};font-weight:700;white-space:nowrap">${labels[p.numPartido]}</span>`;
+      }
+      // Resolver "Gan. Part. X" -> "Gan. P.X"
+      const resolveTeam = name => name.replace(/Gan\.\s*Part\.\s*(\d+)/gi, 'Gan. P.$1').replace(/Per\.\s*Part\.\s*(\d+)/gi, 'Per. P.$1');
       return `<div class="partido">
         <span class="partido-hora">${p.hora}</span>
         <div class="partido-equipos">
-          <span class="equipo-nombre home">${p.local}</span>
+          <span class="equipo-nombre home">${resolveTeam(p.local)}</span>
           <div class="vs-box">${sL}<span class="vs-sep">vs</span>${sV}</div>
-          <span class="equipo-nombre away">${p.visita}</span>
+          <span class="equipo-nombre away">${resolveTeam(p.visita)}</span>
         </div>
-        ${parc}${nota}
+        ${parc}${playoffBadge}${nota}
       </div>`;
     }).join('');
     return `<div class="fecha-card">
