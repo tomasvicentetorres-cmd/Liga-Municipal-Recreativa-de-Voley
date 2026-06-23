@@ -71,6 +71,55 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a1628; color: #
 .footer { text-align:center; padding:20px 16px 32px; font-size:11px; color:#3a5a8a; letter-spacing:0.5px; }
 .footer span { color:#6b8ab5; font-weight:600; }
 @media (max-width: 480px) { .equipos-grid { grid-template-columns: 1fr; } .standings-table th:nth-child(n+6), .standings-table td:nth-child(n+6) { display: none; } }
+
+/* ===== RESPONSIVE MOBILE ===== */
+@media (max-width: 600px) {
+  .header { padding: 16px 12px 14px; }
+  .logo-wrap { padding: 8px 10px; }
+  .logo-wrap img { height: 80px; }
+  .header-sub { font-size: 12px; }
+  .nav-btn { padding: 12px 14px; font-size: 11px; letter-spacing: 0; }
+  .content { padding: 14px 10px; }
+  .gender-btn { padding: 8px 6px; font-size: 12px; }
+  .standings-table th:nth-child(n+7), .standings-table td:nth-child(n+7) { display: none; }
+  .standings-table th, .standings-table td { padding: 8px 4px; font-size: 12px; }
+  .pts-badge { padding: 2px 7px; font-size: 12px; }
+  .rank-badge { width: 24px; height: 24px; font-size: 11px; }
+  .fecha-header { padding: 10px 12px; gap: 4px; }
+  .fecha-num { font-size: 11px; }
+  .fecha-date { font-size: 13px; }
+  .fecha-sede { font-size: 10px; width: 100%; }
+  .partido { padding: 8px 10px; gap: 4px; }
+  .partido-hora { font-size: 10px; min-width: 38px; }
+  .equipo-nombre { font-size: 11px; }
+  .score { padding: 2px 4px; font-size: 11px; min-width: 20px; }
+  .score-pts { font-size: 10px; }
+  .nota-especial { font-size: 10px; padding: 2px 6px; }
+  .equipos-grid { grid-template-columns: 1fr; }
+  .equipo-item { padding: 8px 10px; }
+  .equipo-item-name { font-size: 12px; }
+  .reglamento-section { padding: 12px; }
+  .reglamento-text { font-size: 12px; }
+  .footer { font-size: 10px; padding: 16px 12px 24px; }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .content { padding: 18px 14px; }
+  .partido { padding: 10px 14px; }
+}
+
+@media (min-width: 901px) {
+  .header { padding: 32px 20px 24px; }
+  .logo-wrap img { height: 130px; }
+  .header-sub { font-size: 14px; }
+  .nav-btn { padding: 16px 28px; font-size: 14px; }
+  .content { padding: 28px 20px; }
+  .fecha-header { padding: 14px 20px; }
+  .partido { padding: 12px 20px; }
+  .equipo-nombre { font-size: 14px; }
+  .standings-table th, .standings-table td { padding: 13px 10px; font-size: 14px; }
+  .reglamento-text { font-size: 14px; }
+}
 </style>
 </head>
 <body>
