@@ -81,8 +81,9 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a1628; color: #
   .nav-btn { padding: 12px 14px; font-size: 11px; letter-spacing: 0; }
   .content { padding: 14px 10px; }
   .gender-btn { padding: 8px 6px; font-size: 12px; }
-  .standings-table th:nth-child(n+7), .standings-table td:nth-child(n+7) { display: none; }
-  .standings-table th, .standings-table td { padding: 8px 4px; font-size: 12px; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .standings-table { min-width: 520px; }
+  .standings-table th, .standings-table td { padding: 8px 6px; font-size: 12px; }
   .pts-badge { padding: 2px 7px; font-size: 12px; }
   .rank-badge { width: 24px; height: 24px; font-size: 11px; }
   .fecha-header { padding: 10px 12px; gap: 4px; }
@@ -387,10 +388,10 @@ function renderPos(rows, titulo) {
     <td>${r.tg}</td><td>${r.tp}</td><td class="coef">${r.coef}</td>
   </tr>`).join('');
   return `<p class="section-title">${titulo}</p>
-  <table class="standings-table">
+  <div class="table-wrap"><table class="standings-table">
     <thead><tr><th>#</th><th>Club</th><th>Pts</th><th>PJ</th><th>PG</th><th>PP</th><th>TG</th><th>TP</th><th>Coef.</th></tr></thead>
     <tbody>${filas}</tbody>
-  </table>`;
+  </table></div>`;
 }
 
 // ---- EQUIPOS ----
