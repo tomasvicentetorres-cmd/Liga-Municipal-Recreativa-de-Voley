@@ -20,7 +20,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a1628; color: #
 .content { display: none; padding: 20px 16px; max-width: 900px; margin: 0 auto; }
 .content.active { display: block; }
 .section-title { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #f0c040; margin: 0 0 14px; padding-bottom: 8px; border-bottom: 1px solid #1e3a6e; }
-.gender-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.gender-tabs { display: flex; gap: 8px; margin-bottom: 16px; position: sticky; top: var(--topbar-h, 190px); z-index: 150; background: #0a1628; padding: 10px 0 6px; }
 .gender-btn { flex: 1; padding: 10px; border: 1px solid #1e3a6e; border-radius: 8px; background: #0d1f3c; color: #6b8ab5; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
 .gender-btn.active { background: #1a3a6b; color: #fff; border-color: #f0c040; }
 .standings-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -38,7 +38,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a1628; color: #
 .rank-other { background: #1a3a6b; color: #8ba3cc; }
 .pts-badge { background: #1a3a6b; color: #f0c040; font-weight: 700; padding: 3px 10px; border-radius: 12px; font-size: 13px; }
 .coef { color: #6b8ab5; font-size: 12px; }
-.fecha-card { background: #0d1f3c; border: 1px solid #1e3a6e; border-radius: 12px; margin-bottom: 16px; overflow: hidden; scroll-margin-top: var(--topbar-h, 190px); }
+.fecha-card { background: #0d1f3c; border: 1px solid #1e3a6e; border-radius: 12px; margin-bottom: 16px; overflow: hidden; scroll-margin-top: calc(var(--topbar-h, 190px) + 58px); }
 .fecha-card.fecha-actual { border-color: #f0c040; box-shadow: 0 0 0 2px #f0c040; }
 .fecha-header { background: #1a3a6b; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
 .fecha-num { font-size: 12px; font-weight: 700; color: #f0c040; text-transform: uppercase; letter-spacing: 1px; }
@@ -467,6 +467,9 @@ function showGender(prefix, gender, btn) {
   const f = document.getElementById(prefix+'-f'), m = document.getElementById(prefix+'-m');
   if (f) f.style.display = gender==='f'?'block':'none';
   if (m) m.style.display = gender==='m'?'block':'none';
+  if (prefix === 'fix') {
+    setTimeout(() => scrollToCurrentFecha(prefix + '-' + gender), 60);
+  }
 }
 
 loadFixture().then(() => {
