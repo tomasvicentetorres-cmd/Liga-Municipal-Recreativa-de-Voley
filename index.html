@@ -11,7 +11,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a1628; color: #
 .header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse at center top, rgba(240,192,64,0.12) 0%, transparent 70%); pointer-events: none; }
 .logo-wrap { display: inline-block; background: #fff; border-radius: 16px; padding: 10px 14px; margin-bottom: 10px; position: relative; }
 .header-sub { font-size: 13px; color: #8ba3cc; position: relative; }
-.nav { background: #0d1f3c; border-bottom: 1px solid #1e3a6e; display: flex; overflow-x: auto; scrollbar-width: none; }
+.nav { position: sticky; top: 0; z-index: 100; background: #0d1f3c; border-bottom: 1px solid #1e3a6e; display: flex; overflow-x: auto; scrollbar-width: none; }
 .nav::-webkit-scrollbar { display: none; }
 .nav-btn { flex-shrink: 0; padding: 14px 20px; font-size: 13px; font-weight: 600; color: #6b8ab5; border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; letter-spacing: 0.5px; text-transform: uppercase; }
 .nav-btn:hover { color: #a8c4e8; }
@@ -37,7 +37,8 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a1628; color: #
 .rank-other { background: #1a3a6b; color: #8ba3cc; }
 .pts-badge { background: #1a3a6b; color: #f0c040; font-weight: 700; padding: 3px 10px; border-radius: 12px; font-size: 13px; }
 .coef { color: #6b8ab5; font-size: 12px; }
-.fecha-card { background: #0d1f3c; border: 1px solid #1e3a6e; border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
+.fecha-card { background: #0d1f3c; border: 1px solid #1e3a6e; border-radius: 12px; margin-bottom: 16px; overflow: hidden; scroll-margin-top: 70px; }
+.fecha-card.fecha-actual { border-color: #f0c040; box-shadow: 0 0 0 2px #f0c040; }
 .fecha-header { background: #1a3a6b; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
 .fecha-num { font-size: 12px; font-weight: 700; color: #f0c040; text-transform: uppercase; letter-spacing: 1px; }
 .fecha-date { font-size: 15px; font-weight: 800; color: #fff; }
@@ -307,14 +308,14 @@ async function loadFixture() {
 
 function parseTitulo(t) {
   const m = t.match(/^(.+?)\s*-\s*(\d{2}\/\d{2}\/\d{4})/);
-  if (m) { const p = m[2].split('/'); return {num: m[1].trim(), date: p[0]+' / '+p[1]+' / '+p[2]}; }
-  return {num: t, date: ''};
+  if (m) { const p = m[2].split('/'); return {num: m[1].trim(), date: p[0]+' / '+p[1]+' / '+p[2], rawDate: m[2]}; }
+  return {num: t, date: '', rawDate: ''};
 }
 
 function renderFechas(fechas) {
   if (!fechas.length) return '<div class="error-msg">Sin datos.</div>';
   return fechas.map(f => {
-    const {num, date} = parseTitulo(f.titulo);
+    const {num, date, rawDate} = parseTitulo(f.titulo);
     const partidos = f.partidos.map(p => {
       const jugado = p.resL !== '' && p.resV !== '' && p.resL !== '-' && !isNaN(parseInt(p.resL));
       let sL, sV;
@@ -347,7 +348,7 @@ function renderFechas(fechas) {
         ${parc}${playoffBadge}${nota}
       </div>`;
     }).join('');
-    return `<div class="fecha-card">
+    return `<div class="fecha-card" data-date="${rawDate}">
       <div class="fecha-header">
         <span class="fecha-num">${num}</span>
         <span class="fecha-date">${date}</span>
@@ -415,6 +416,34 @@ async function loadEquipos() {
   }
 }
 
+function scrollToCurrentFecha(containerId) {
+  const cards = document.querySelectorAll('#' + containerId + ' .fecha-card[data-date]');
+  if (!cards.length) return;
+  const parseDate = s => {
+    const p = s.split('/');
+    if (p.length !== 3) return null;
+    return new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0]));
+  };
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  let target = null, targetDiff = Infinity, lastPast = null, lastPastDate = null;
+  cards.forEach(card => {
+    const d = parseDate(card.dataset.date);
+    if (!d) return;
+    if (d.getTime() === hoy.getTime()) { target = card; targetDiff = -1; return; }
+    if (d > hoy) {
+      const diff = d - hoy;
+      if (diff < targetDiff) { targetDiff = diff; target = card; }
+    } else if (!lastPastDate || d > lastPastDate) {
+      lastPastDate = d; lastPast = card;
+    }
+  });
+  const el = target || lastPast;
+  if (el) {
+    el.classList.add('fecha-actual');
+    setTimeout(() => el.scrollIntoView({behavior: 'smooth', block: 'start'}), 350);
+  }
+}
+
 function showTab(name, btn) {
   document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -430,7 +459,10 @@ function showGender(prefix, gender, btn) {
   if (m) m.style.display = gender==='m'?'block':'none';
 }
 
-loadFixture();
+loadFixture().then(() => {
+  scrollToCurrentFecha('fix-f');
+  scrollToCurrentFecha('fix-m');
+});
 loadPosiciones();
 loadEquipos();
 </script>
