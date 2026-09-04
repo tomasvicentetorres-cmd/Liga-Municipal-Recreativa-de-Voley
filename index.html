@@ -319,7 +319,12 @@ function renderFechas(fechas) {
   if (!fechas.length) return '<div class="error-msg">Sin datos.</div>';
   return fechas.map(f => {
     const {num, date, rawDate} = parseTitulo(f.titulo);
-    const partidos = f.partidos.map(p => {
+    const partidosOrdenados = [...f.partidos].sort((a, b) => {
+      const [ha, ma] = a.hora.split(':').map(Number);
+      const [hb, mb] = b.hora.split(':').map(Number);
+      return (ha * 60 + ma) - (hb * 60 + mb);
+    });
+    const partidos = partidosOrdenados.map(p => {
       const jugado = p.resL !== '' && p.resV !== '' && p.resL !== '-' && !isNaN(parseInt(p.resL));
       let sL, sV;
       if (jugado) {
