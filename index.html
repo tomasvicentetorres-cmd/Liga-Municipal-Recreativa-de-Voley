@@ -261,24 +261,26 @@ async function loadFixture() {
       // Partido izquierdo: col1=hora, col2=local, col3=resL, col4=vs, col5=resV, col6=visita, col7=genero
       const hora1 = c1;
       const numPartido = c0.match(/^\d+$/) ? parseInt(c0) : null;
-      if (hora1.match(/\d+:\d+/) && currentKey) {
-        const local1 = (r[2]||'').trim();
-        const resL1  = (r[3]||'').trim();
-        const resV1  = (r[5]||'').trim();
-        const vis1   = (r[6]||'').trim();
-        const gen1   = (r[7]||'').trim();
-        // Fila de parciales: fila siguiente, col3 y col5. Comentario en col0 o col1
+      if (currentKey && (hora1.match(/\d+:\d+/) || (r[9]||'').trim().match(/\d+:\d+/))) {
         const next = rows[i+1] || [];
-        const parcL1 = (next[3]||'').trim();
-        const parcV1 = (next[5]||'').trim();
-        const comentario1 = (next[0]||next[1]||'').trim();
-        if (local1 && vis1) {
-          const p = {hora: hora1, local: local1, resL: resL1, resV: resV1, visita: vis1, nota: notaNext || comentario1, parcL: parcL1, parcV: parcV1, numPartido};
-          notaNext = '';
-          if (gen1 === 'F') fechasF[currentKey].partidos.push(p);
-          else if (gen1 === 'M') fechasM[currentKey].partidos.push(p);
+        // Partido izquierdo (solo si tiene horario)
+        if (hora1.match(/\d+:\d+/)) {
+          const local1 = (r[2]||'').trim();
+          const resL1  = (r[3]||'').trim();
+          const resV1  = (r[5]||'').trim();
+          const vis1   = (r[6]||'').trim();
+          const gen1   = (r[7]||'').trim();
+          const parcL1 = (next[3]||'').trim();
+          const parcV1 = (next[5]||'').trim();
+          const comentario1 = (next[0]||next[1]||'').trim();
+          if (local1 && vis1) {
+            const p = {hora: hora1, local: local1, resL: resL1, resV: resV1, visita: vis1, nota: notaNext || comentario1, parcL: parcL1, parcV: parcV1, numPartido};
+            notaNext = '';
+            if (gen1 === 'F') fechasF[currentKey].partidos.push(p);
+            else if (gen1 === 'M') fechasM[currentKey].partidos.push(p);
+          }
         }
-        // Partido derecho: col9=hora, col10=local, col11=resL, col12=vs, col13=resV, col14=visita, col15=genero
+        // Partido derecho: col9=hora, col10=local, col11=resL, col12=vs, col13=resV, col14=visita, col15=genero (independiente del izquierdo)
         const hora2 = (r[9]||'').trim();
         if (hora2.match(/\d+:\d+/)) {
           const local2 = (r[10]||'').trim();
